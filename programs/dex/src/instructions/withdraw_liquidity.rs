@@ -11,7 +11,15 @@ use crate::{
 };
 
 pub fn withdraw_liquidity(ctx: Context<WithdrawLiquidity>, amount: u64) -> Result<()> {
-    let authority_bump = *ctx.bumps.get("pool_authority").unwrap();
+    // let authority_bump = *ctx.bumps.get("pool_authority").unwrap();
+    let seeds =  [  
+        &ctx.accounts.pool.amm.to_bytes(),
+        &ctx.accounts.mint_a.key().to_bytes(),
+        &ctx.accounts.mint_b.key().to_bytes(),
+        AUTHORITY_SEED.as_bytes(),
+    ];
+    let (_pda, authority_bump) = Pubkey::find_program_address(&seeds, &ctx.program_id);
+
     let authority_seeds = &[
         &ctx.accounts.pool.amm.to_bytes(),
         &ctx.accounts.mint_a.key().to_bytes(),
@@ -91,7 +99,7 @@ pub struct WithdrawLiquidity<'info> {
         ],
         bump,
     )]
-    pub amm: Account<'info, Amm>,
+    pub amm: Box<Account<'info, Amm>>,
 
     #[account(
         seeds = [
@@ -103,7 +111,7 @@ pub struct WithdrawLiquidity<'info> {
         has_one = mint_a,
         has_one = mint_b,
     )]
-    pub pool: Account<'info, Pool>,
+    pub pool: Box<Account<'info, Pool>>,
 
     /// CHECK: Read only authority
     #[account(

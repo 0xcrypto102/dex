@@ -1,13 +1,13 @@
 #![allow(clippy::result_large_err)]
 pub mod constants;
-pub mod error;
+pub mod errors;
 pub mod instructions;
 pub mod state;
 
 use anchor_lang::prelude::*;
 
 pub use constants::*;
-pub use instructions::*;
+use instructions::*;
 pub use state::*;
 
 declare_id!("E5zTLJG8FdWtNZFwHHzwVsN2WKS2ngJtubyusxKgxegE");

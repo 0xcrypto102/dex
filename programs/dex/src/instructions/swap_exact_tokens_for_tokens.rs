@@ -63,7 +63,15 @@ pub fn swap_exact_tokens_for_tokens(
     let invariant = pool_a.amount * pool_b.amount;
 
     // Transfer tokens to the pool
-    let authority_bump = *ctx.bumps.get("pool_authority").unwrap();
+    // let authority_bump = *ctx.bumps.get("pool_authority").unwrap();
+    let seeds =  [  
+        &ctx.accounts.pool.amm.to_bytes(),
+        &ctx.accounts.mint_a.key().to_bytes(),
+        &ctx.accounts.mint_b.key().to_bytes(),
+        AUTHORITY_SEED.as_bytes(),
+    ];
+    let (_pda, authority_bump) = Pubkey::find_program_address(&seeds, &ctx.program_id);
+
     let authority_seeds = &[
         &ctx.accounts.pool.amm.to_bytes(),
         &ctx.accounts.mint_a.key().to_bytes(),
