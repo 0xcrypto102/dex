@@ -3,6 +3,7 @@ use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount},
 };
+use crate::GlobalState;
 
 use crate::{
     constants::{AUTHORITY_SEED, LIQUIDITY_SEED},
@@ -16,11 +17,22 @@ pub fn create_pool(ctx: Context<CreatePool>) -> Result<()> {
     pool.mint_a = ctx.accounts.mint_a.key();
     pool.mint_b = ctx.accounts.mint_b.key();
 
+    let global_state = &mut ctx.accounts.global_state;
+    global_state.pools.push(pool.key());
+
+    Ok(())
+}
+
+pub fn confirm_pool(ctx: Context<ConfirmPool>) -> Result<()> {
     Ok(())
 }
 
 #[derive(Accounts)]
 pub struct CreatePool<'info> {
+    /// The account paying for all rents
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
     #[account(
         seeds = [
             amm.id.as_ref()
@@ -28,6 +40,13 @@ pub struct CreatePool<'info> {
         bump,
     )]
     pub amm: Box<Account<'info, Amm>>,
+
+    #[account(
+        mut,
+        seeds = [b"global-state"],
+        bump
+    )]
+    pub global_state: Box<Account<'info, GlobalState>>,
 
     #[account(
         init,
@@ -42,6 +61,30 @@ pub struct CreatePool<'info> {
         constraint = mint_a.key() < mint_b.key() @ DexError::InvalidMint
     )]
     pub pool: Box<Account<'info, Pool>>,
+
+    pub mint_a: Box<Account<'info, Mint>>,
+
+    pub mint_b: Box<Account<'info, Mint>>,
+
+    /// Solana ecosystem accounts
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ConfirmPool<'info> {
+    /// The account paying for all rents
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    #[account(
+        seeds = [
+            amm.id.as_ref()
+        ],
+        bump,
+    )]
+    pub amm: Box<Account<'info, Amm>>,
 
     /// CHECK: Read only authority
     #[account(
@@ -89,10 +132,6 @@ pub struct CreatePool<'info> {
         associated_token::authority = pool_authority,
     )]
     pub pool_account_b: Box<Account<'info, TokenAccount>>,
-
-    /// The account paying for all rents
-    #[account(mut)]
-    pub payer: Signer<'info>,
 
     /// Solana ecosystem accounts
     pub token_program: Program<'info, Token>,

@@ -832,6 +832,7 @@ dependencies = [
  "fixed",
  "fixed-sqrt",
  "half",
+ "num-integer",
  "solana-program",
  "toml_datetime",
  "winnow",

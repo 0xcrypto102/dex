@@ -3,8 +3,9 @@ use anchor_spl::{
     associated_token::AssociatedToken,
     token::{self, Mint, MintTo, Token, TokenAccount, Transfer},
 };
-use fixed::types::I64F64;
+use fixed::{types::I64F64, FixedI128};
 use fixed_sqrt::FixedSqrt;
+use num_integer::Roots;
 
 use crate::{
     constants::{AUTHORITY_SEED, LIQUIDITY_SEED, MINIMUM_LIQUIDITY},
@@ -38,34 +39,28 @@ pub fn deposit_liquidity(
         // Add as is if there is no liquidity
         (amount_a, amount_b)
     } else {
-        let ratio = I64F64::from_num(pool_a.amount)
-            .checked_mul(I64F64::from_num(pool_b.amount))
-            .unwrap();
-        if pool_a.amount > pool_b.amount {
+
+        if pool_a.amount >= pool_b.amount {
             (
-                I64F64::from_num(amount_b)
-                    .checked_mul(ratio)
-                    .unwrap()
-                    .to_num::<u64>(),
+                ((amount_b as u128) * (pool_a.amount as u128) / (pool_b.amount as u128)) as u64,
                 amount_b,
             )
         } else {
             (
                 amount_a,
-                I64F64::from_num(amount_a)
-                    .checked_div(ratio)
-                    .unwrap()
-                    .to_num::<u64>(),
+                ((amount_a as u128) * (pool_b.amount as u128) / (pool_a.amount as u128)) as u64
+                    
             )
         }
     };
 
     // Computing the amount of liquidity about to be deposited
-    let mut liquidity = I64F64::from_num(amount_a)
-        .checked_mul(I64F64::from_num(amount_b))
-        .unwrap()
-        .sqrt()
-        .to_num::<u64>();
+    let mut liquidity = ((amount_a as u128) * (amount_b as u128).sqrt()) as u64;
+    // let mut liquidity = I64F64::from_num(amount_a)
+    //     .checked_mul(I64F64::from_num(amount_b))
+    //     .unwrap()
+    //     .sqrt()
+    //     .to_num::<u64>();
 
     // Lock some minimum liquidity on the first deposit
     if pool_creation {
@@ -143,8 +138,8 @@ pub struct DepositLiquidity<'info> {
             pool.mint_b.key().as_ref(),
         ],
         bump,
-        has_one = mint_a,
-        has_one = mint_b,
+        // has_one = mint_a,
+        // has_one = mint_b,
     )]
     pub pool: Box<Account<'info, Pool>>,
 
@@ -201,20 +196,22 @@ pub struct DepositLiquidity<'info> {
     )]
     pub depositor_account_liquidity: Box<Account<'info, TokenAccount>>,
 
-    #[account(
-        init_if_needed,
-        payer = payer,
-        associated_token::mint = mint_a,
-        associated_token::authority = depositor,
-    )]
+    // #[account(
+    //     init_if_needed,
+    //     payer = payer,
+    //     associated_token::mint = mint_a,
+    //     associated_token::authority = depositor,
+    // )]
+    #[account(mut)]
     pub depositor_account_a: Box<Account<'info, TokenAccount>>,
 
-    #[account(
-        init_if_needed,
-        payer = payer,
-        associated_token::mint = mint_b,
-        associated_token::authority = depositor,
-    )]
+    // #[account(
+    //     init_if_needed,
+    //     payer = payer,
+    //     associated_token::mint = mint_b,
+    //     associated_token::authority = depositor,
+    // )]
+    #[account(mut)]
     pub depositor_account_b: Box<Account<'info, TokenAccount>>,
 
     /// The account paying for all rents

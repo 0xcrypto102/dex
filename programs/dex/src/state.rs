@@ -33,3 +33,10 @@ pub struct Pool {
 impl Pool {
     pub const LEN: usize = 8 + 32 + 32 + 32;
 }
+
+#[account]
+#[derive(Default)]
+pub struct GlobalState {
+    pub owner: Pubkey,
+    pub pools: Vec<Pubkey>,
+}

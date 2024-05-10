@@ -10,14 +10,22 @@ pub use constants::*;
 use instructions::*;
 pub use state::*;
 
-declare_id!("E5zTLJG8FdWtNZFwHHzwVsN2WKS2ngJtubyusxKgxegE");
+declare_id!("6Gkgg5qzdwCThP8n8aEtw54Kez6J3QPidjbkKSuUo7s8");
 
 #[program]
 pub mod dex {
     use super::*;
 
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        instructions::initialize(ctx)
+    }
+
     pub fn create_amm(ctx: Context<CreateAmm>, id: Pubkey, fee: u16) -> Result<()> {
         instructions::create_amm(ctx, id, fee)
+    }
+
+    pub fn confirm_pool(ctx: Context<ConfirmPool>) -> Result<()> {
+        instructions::confirm_pool(ctx)
     }
 
     pub fn create_pool(ctx: Context<CreatePool>) -> Result<()> {
