@@ -6,6 +6,7 @@ use anchor_spl::{
 use fixed::{types::I64F64, FixedI128};
 use fixed_sqrt::FixedSqrt;
 use num_integer::Roots;
+use crate::events::DepositLiquidityEvent;
 
 use crate::{
     constants::{AUTHORITY_SEED, LIQUIDITY_SEED, MINIMUM_LIQUIDITY},
@@ -125,6 +126,13 @@ pub fn deposit_liquidity(
         ),
         liquidity,
     )?;
+
+    emit!(DepositLiquidityEvent {
+        token_a: ctx.accounts.mint_a.key(),
+        token_b: ctx.accounts.mint_b.key(),
+        amount_a,
+        amount_b,
+    });
 
     Ok(())
 }

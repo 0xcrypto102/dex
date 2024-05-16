@@ -3,14 +3,16 @@ pub mod constants;
 pub mod errors;
 pub mod instructions;
 pub mod state;
+pub mod events;
 
 use anchor_lang::prelude::*;
 
 pub use constants::*;
 use instructions::*;
 pub use state::*;
+pub use events::*;
 
-declare_id!("6Gkgg5qzdwCThP8n8aEtw54Kez6J3QPidjbkKSuUo7s8");
+declare_id!("BNmapsBA72Egnxd6H25UEuWmbtBKuXLD5stHQqDo6eg6");
 
 #[program]
 pub mod dex {
@@ -40,8 +42,11 @@ pub mod dex {
         instructions::deposit_liquidity(ctx, amount_a, amount_b)
     }
 
-    pub fn withdraw_liquidity(ctx: Context<WithdrawLiquidity>, amount: u64) -> Result<()> {
-        instructions::withdraw_liquidity(ctx, amount)
+    pub fn withdraw_liquidity_tokena(ctx: Context<WithdrawLiquidityTokenA>, amount: u64) -> Result<()> {
+        instructions::withdraw_liquidity_tokena(ctx, amount)
+    }
+    pub fn withdraw_liquidity_tokenb(ctx: Context<WithdrawLiquidityTokenB>, amount: u64) -> Result<()> {
+        instructions::withdraw_liquidity_tokenb(ctx, amount)
     }
 
     pub fn swap_exact_tokens_for_tokens(

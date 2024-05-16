@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-dex = "6Gkgg5qzdwCThP8n8aEtw54Kez6J3QPidjbkKSuUo7s8"
+dex = "BNmapsBA72Egnxd6H25UEuWmbtBKuXLD5stHQqDo6eg6"
 
 [registry]
 url = "https://api.apr.dev"
