@@ -12,7 +12,7 @@ use instructions::*;
 pub use state::*;
 pub use events::*;
 
-declare_id!("BNmapsBA72Egnxd6H25UEuWmbtBKuXLD5stHQqDo6eg6");
+declare_id!("FA8G3TKwgPjjsbF1w7sm7VzUnFWe93faeFeQCCrvjMTt");
 
 #[program]
 pub mod dex {
@@ -42,11 +42,8 @@ pub mod dex {
         instructions::deposit_liquidity(ctx, amount_a, amount_b)
     }
 
-    pub fn withdraw_liquidity_tokena(ctx: Context<WithdrawLiquidityTokenA>, amount: u64) -> Result<()> {
-        instructions::withdraw_liquidity_tokena(ctx, amount)
-    }
-    pub fn withdraw_liquidity_tokenb(ctx: Context<WithdrawLiquidityTokenB>, amount: u64) -> Result<()> {
-        instructions::withdraw_liquidity_tokenb(ctx, amount)
+    pub fn withdraw_liquidity(ctx: Context<WithdrawLiquidity>, amount: u64) -> Result<()> {
+        instructions::withdraw_liquidity(ctx, amount)
     }
 
     pub fn swap_exact_tokens_for_tokens(

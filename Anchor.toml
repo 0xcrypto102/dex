@@ -5,13 +5,13 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-dex = "BNmapsBA72Egnxd6H25UEuWmbtBKuXLD5stHQqDo6eg6"
+dex = "FA8G3TKwgPjjsbF1w7sm7VzUnFWe93faeFeQCCrvjMTt"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "https://devnet.helius-rpc.com/?api-key=3df5f1e8-ed02-460e-98db-c7fa20688dad"
 wallet = "/root/.config/solana/id.json"
 
 [scripts]

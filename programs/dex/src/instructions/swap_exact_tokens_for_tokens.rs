@@ -33,27 +33,10 @@ pub fn swap_exact_tokens_for_tokens(
     let pool_a = &ctx.accounts.pool_account_a;
     let pool_b = &ctx.accounts.pool_account_b;
     let output = if swap_a {
-        I64F64::from_num(taxed_input)
-            .checked_mul(I64F64::from_num(pool_b.amount))
-            .unwrap()
-            .checked_div(
-                I64F64::from_num(pool_a.amount)
-                    .checked_add(I64F64::from_num(taxed_input))
-                    .unwrap(),
-            )
-            .unwrap()
+        ((taxed_input as u128) * (pool_b.amount as u128) / (pool_a.amount as u128 + taxed_input as u128)) as u64
     } else {
-        I64F64::from_num(taxed_input)
-            .checked_mul(I64F64::from_num(pool_a.amount))
-            .unwrap()
-            .checked_div(
-                I64F64::from_num(pool_b.amount)
-                    .checked_add(I64F64::from_num(taxed_input))
-                    .unwrap(),
-            )
-            .unwrap()
-    }
-    .to_num::<u64>();
+        ((taxed_input as u128) * (pool_a.amount as u128) / (pool_b.amount as u128 + taxed_input as u128)) as u64
+    };
 
     if output < min_output_amount {
         return err!(DexError::OutputTooSmall);
